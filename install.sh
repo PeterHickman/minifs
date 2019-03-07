@@ -12,5 +12,5 @@ fi
 ##
 ROOT="0"
 
-echo "Installing minifs into /usr/local/sbin/"
-install -g $ROOT -o $ROOT -m 0755 minifs /usr/local/sbin/
+echo "Installing minifs into /usr/local/bin/"
+install -g $ROOT -o $ROOT -m 0755 minifs /usr/local/bin/

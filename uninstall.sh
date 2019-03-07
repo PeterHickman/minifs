@@ -18,4 +18,4 @@ remove()
   fi
 }
 
-remove "/usr/local/sbin/minifs"
+remove "/usr/local/bin/minifs"
