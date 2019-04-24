@@ -22,53 +22,57 @@ def opts(valid_options):
         if sys.argv[index].startswith('--'):
             key = sys.argv[index][2:].lower()
             if key not in valid_options:
-            	print("Unknown option --{}".format(key))
-            	sys.exit(0)
+                print("Unknown option --{}".format(key))
+                sys.exit(0)
             else:
-            	index += 1
-            	options[key] = sys.argv[index]
+                index += 1
+                options[key] = sys.argv[index]
         else:
-        	junk.append(sys.argv[index])
+            junk.append(sys.argv[index])
 
         index += 1
         if index == len(sys.argv):
             break
 
     if len(options) != len(valid_options):
-    	print("Missing options. Should provide {}".format(valid_options))
-    	sys.exit(0)
+        print("Missing options. Should provide {}".format(valid_options))
+        sys.exit(0)
 
     return options, junk
+
+if len(sys.argv) == 1:
+    print('minifs --host <host> --port <port> --dir <dir>')
+    sys.exit(0)
 
 options, junk = opts(valid_options)
 
 if len(junk):
-	print("Unnecessary additional arguments: {}".format(junk))
-	sys.exit(0)
+    print("Unnecessary additional arguments: {}".format(junk))
+    sys.exit(0)
 
 PORT = int(options['port'])
 HOST = options['host']
 DIR  = options['dir']
 
 class myHandler(http.server.SimpleHTTPRequestHandler):
-	def do_GET(self):
-		try:
-			f = open(DIR + os.sep + self.path, 'rb') 
-			self.send_response(200)
-			self.send_header('Content-type', 'application/octet-stream')
-			self.end_headers()
-			self.wfile.write(f.read())
-			f.close()
-		except IOError:
-			self.send_error(404,'File Not Found: %s' % self.path)
+    def do_GET(self):
+        try:
+            f = open(DIR + os.sep + self.path, 'rb')
+            self.send_response(200)
+            self.send_header('Content-type', 'application/octet-stream')
+            self.end_headers()
+            self.wfile.write(f.read())
+            f.close()
+        except IOError:
+            self.send_error(404,'File Not Found: %s' % self.path)
 
-	def do_HEAD(self):
-		self.do_GET()
+    def do_HEAD(self):
+        self.do_GET()
 
 try:
-	with socketserver.TCPServer((HOST, PORT), myHandler) as httpd:
-		print("Listening at {} on {}".format(HOST, PORT))
-		httpd.serve_forever()
+    with socketserver.TCPServer((HOST, PORT), myHandler) as httpd:
+        print("Listening at {} on {}".format(HOST, PORT))
+        httpd.serve_forever()
 except KeyboardInterrupt:
-	print('^C received, shutting down the web server')
-	httpd.socket.close()
+    print('^C received, shutting down the web server')
+    httpd.socket.close()
